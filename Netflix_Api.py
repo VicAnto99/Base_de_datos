@@ -26,3 +26,5 @@ img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, 
 #Right_Frame_design
 
 window.mainloop()
+
+#putoelvic
