@@ -1,6 +1,12 @@
 #Imports
 from tkinter import Label, StringVar, Button, Entry, Tk, Frame, messagebox
 from PIL import Image, ImageTk
+from bson import ObjectId
+from pymongo import MongoClient
+import redis
+
+#Connections
+client = MongoClient()
 
 #Definitions
 
@@ -26,5 +32,3 @@ img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, 
 #Right_Frame_design
 
 window.mainloop()
-
-#putoelvic
