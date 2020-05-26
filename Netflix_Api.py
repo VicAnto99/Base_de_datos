@@ -33,7 +33,7 @@ img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, 
 
 #Right_Frame_design
 query={'title':"Norm of the North: King Sized Adventure"}
-projection={'_id':0, 'title':"Norm of the North: King Sized Adventure"} # show x but not show _id
+projection={'_id':0, 'director':1} # show x but not show _id
 result=col.find(query,projection)
 for doc in result:
     print(doc)
