@@ -26,9 +26,9 @@ if __name__ == '__main__':
     client = MongoClient()
     db = client.Netflix
     col = db.Titles
-    """cache = redis.from_url('redis://localhost:6379', db=0)
+    cache = redis.from_url('redis://localhost:6379', db=0)
     cache_key = 'id_set'
-    cache_ids(db, cache, cache_key)"""
+    """cache_ids(db, cache, cache_key)"""
     cache_ids()
 
     #Definitions
