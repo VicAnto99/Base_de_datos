@@ -5,20 +5,22 @@ from bson import ObjectId
 from pymongo import MongoClient
 import redis
 
-#def cache_ids(col, cache, cache_key, reset=True, limit=1000):
-def cache_ids():
-    """if reset:
+def cache_ids(db, cache, cache_key, reset=True, limit=1000):
+#def cache_ids():
+    if reset:
         # O(M) where M = number of items in key
-        cache.delete(cache_key)"""
+        cache.delete(cache_key)
         #Query
     query={'title':"Norm of the North: King Sized Adventure"}
     projection={'_id':0, 'director':1} # show x but not show _id
-    cursor=col.find(query,projection)#.limit(limit)
+    cursor=col.find(query,projection).limit(limit)
     for doc in cursor:
         print(doc)
     # O(N) where N is the number of IDs to be cached
     for doc in cursor:
         cache.sadd(cache_key, unicode(doc['_id']))
+    cache.sget(cache_key,doc['_id'])
+    
 
 if __name__ == '__main__':
 
@@ -28,8 +30,8 @@ if __name__ == '__main__':
     col = db.Titles
     cache = redis.from_url('redis://localhost:6379', db=0)
     cache_key = 'id_set'
-    """cache_ids(db, cache, cache_key)"""
-    cache_ids()
+    cache_ids(db, cache, cache_key)
+    #cache_ids()
 
     #Definitions
 
@@ -54,8 +56,8 @@ if __name__ == '__main__':
 
     #Right_Frame_design
 
-    """# Random ID determination? Redis SRANDMEMBER!
-    _id = cache.srandmember(cache_key)
+    # Random ID determination? Redis SRANDMEMBER!
+    """_id = cache.srandmember(cache_key)
     
     # Random doc
     doc = db[COLLECTION].find_one({'_id': ObjectId(_id)})
