@@ -1,10 +1,11 @@
 #Imports
-from tkinter import Label, StringVar, Button, Entry, Tk, Frame, messagebox
+from tkinter import Label, StringVar, Button, Entry, Tk, Frame, messagebox, Menu
 from PIL import Image, ImageTk
 from bson import ObjectId
 from pymongo import MongoClient
 import redis
 
+#Definitions
 def cache_ids(db, cache, cache_key, reset=True, limit=1000):
     if reset:
         # O(M) where M = number of items in key
@@ -20,8 +21,6 @@ def cache_ids(db, cache, cache_key, reset=True, limit=1000):
         cache.sadd(cache_key, unicode(doc['_id']))
     print(cache.smembers(cache_key))
 
-    
-
 if __name__ == '__main__':
 
     #Connections
@@ -32,13 +31,28 @@ if __name__ == '__main__':
     cache_key = 'id_set'
     cache_ids(col, cache, cache_key)
 
-    #Definitions
-
     #Main
     window = Tk()
     window.title("Netflix")
+    window.iconbitmap('N.ico')
     window.maxsize(1010, 610)
     window.config(bg = "black")
+    menubar = Menu(window)
+    window.config(menu = menubar)
+
+    #Menu
+    search = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
+    search.add_command(label = "ShowID")
+    search.add_command(label = "Type")
+    search.add_command(label = "Title")
+    search.add_command(label = "Director")
+    search.add_command(label = "Cast")
+    search.add_command(label = "Country")
+    search.add_command(label = "Realease year")
+    search.add_command(label = "Rating")
+    menubar.add_cascade(label = "Search", menu = search)
+    
+
 
     #Left_Frame_design and Right_Frame_design and center
     center_frame_1 = Frame(window, width = 990, height = 590, bg='red')
@@ -52,8 +66,12 @@ if __name__ == '__main__':
     load = Image.open("Netflix.png")
     render = ImageTk.PhotoImage(load)
     img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, padx = 0, pady = 0)
+    in_1 = Label(left_frame, text = "INSTRUCTIONS", bg = "black", fg = "white", font = ("Verdana", 24)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    in_2 = Label(left_frame, text = "Select the type of your search", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 2, column = 0, padx = 5, pady = 5)
 
     #Right_Frame_design
+
+
 
     # Random ID determination? Redis SRANDMEMBER!
     """_id = cache.srandmember(cache_key)
@@ -67,6 +85,4 @@ if __name__ == '__main__':
     # Random docs
     docs = db[COLLECTION].find({'_id': {'$in': _ids}})"""
 
-    
-
-window.mainloop()
+    window.mainloop()
