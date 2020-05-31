@@ -1,24 +1,32 @@
 #Imports
 from tkinter import Label, StringVar, Button, Entry, Tk, Frame, messagebox
 from PIL import Image, ImageTk
-from bson import ObjectId
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 import redis
 
-def cache_ids(db, cache, cache_key, reset=True, limit=1000):
-    if reset:
-        # O(M) where M = number of items in key
-        cache.delete(cache_key)
-        #Query
-    query={'title':"Norm of the North: King Sized Adventure"}
-    projection={'_id':0, 'director':1} # show x but not show _id
-    cursor=db.find(query,projection).limit(limit)
-    for doc in cursor:
-        print(doc)
-    # O(N) where N is the number of IDs to be cached
-    for doc in cursor:
-        cache.sadd(cache_key, unicode(doc['_id']))
-    print(cache.smembers(cache_key))
+def store_cache(db, cache, cache_key, reset=True, limit=1000):
+    #if reset:
+        #cache.delete(cache_key)
+    #query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
+    query={'show_id':'80163890'}
+    #projection={'_id':0,'show_id':1,'type':2,'title':3,'director':4,'cast':5,'country':6,'date_added':7,'release_year':8,'rating':9,'duration':10,'listed_in':11,'description':12}
+    print(cache.HEXISTS("query:{}".format(str(query))))
+    if(cache.hexists("query:{}".format(str(query)))):
+        print("Buscando en el cache")
+        print("Resultado guardado: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
+    else:
+        print("Buscando en la base de Mongo")
+        cursor=db.find(query).limit(1)
+        for doc in cursor:
+            print(str(doc))
+            if not cache.sismember(cache_key, str(query)):
+                cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
+                cache.sadd(cache_key, str(query))
+                cache.expire(cache_key, MAX_EXPIRE_DURATION)
+    print(cache.smembers("cache_set"))
+
+ 
 
     
 
@@ -29,8 +37,9 @@ if __name__ == '__main__':
     db = client.Netflix
     col = db.Titles
     cache = redis.from_url('redis://localhost:6379', db=0)
-    cache_key = 'id_set'
-    cache_ids(col, cache, cache_key)
+    cache_key = "cache_set"
+    MAX_EXPIRE_DURATION = 24 * 3600
+    store_cache(col, cache, cache_key)
 
     #Definitions
 
