@@ -6,30 +6,8 @@ from pymongo import MongoClient
 import redis
 
 #Definitions
-def cache_ids(db, cache, cache_key, reset=True, limit=1000):
-    if reset:
-        # O(M) where M = number of items in key
-        cache.delete(cache_key)
-        #Query
-    query={'title':"Norm of the North: King Sized Adventure"}
-    projection={'_id':0, 'director':1} # show x but not show _id
-    cursor=db.find(query,projection).limit(limit)
-    for doc in cursor:
-        print(doc)
-    # O(N) where N is the number of IDs to be cached
-    for doc in cursor:
-        cache.sadd(cache_key, unicode(doc['_id']))
-    print(cache.smembers(cache_key))
 
 if __name__ == '__main__':
-
-    #Connections
-    client = MongoClient()
-    db = client.Netflix
-    col = db.Titles
-    cache = redis.from_url('redis://localhost:6379', db=0)
-    cache_key = 'id_set'
-    cache_ids(col, cache, cache_key)
 
     #Main
     window = Tk()
@@ -37,12 +15,12 @@ if __name__ == '__main__':
     window.iconbitmap('N.ico')
     window.maxsize(1010, 610)
     window.config(bg = "black")
-    menubar = Menu(window)
+    menubar = Menu(window, bg = 'gray17', fg = 'gray63')
     window.config(menu = menubar)
 
     #Menu
     search = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
-    search.add_command(label = "ShowID")
+    search.add_command(label = "ID")
     search.add_command(label = "Type")
     search.add_command(label = "Title")
     search.add_command(label = "Director")
@@ -50,9 +28,14 @@ if __name__ == '__main__':
     search.add_command(label = "Country")
     search.add_command(label = "Realease year")
     search.add_command(label = "Rating")
+    search.add_command(label = "Search and have \n the statistics")
     menubar.add_cascade(label = "Search", menu = search)
     
-
+    modify = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
+    modify.add_command(label = "Edit")
+    modify.add_command(label = "Add")
+    modify.add_command(label = "Delete")
+    menubar.add_cascade(label = "Modify Database", menu = modify)
 
     #Left_Frame_design and Right_Frame_design and center
     center_frame_1 = Frame(window, width = 990, height = 590, bg='red')
@@ -68,22 +51,8 @@ if __name__ == '__main__':
     img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, padx = 0, pady = 0)
     in_1 = Label(left_frame, text = "INSTRUCTIONS", bg = "black", fg = "white", font = ("Verdana", 24)).grid(row = 1, column = 0, padx = 5, pady = 5)
     in_2 = Label(left_frame, text = "Select the type of your search", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 2, column = 0, padx = 5, pady = 5)
-    in_3 = Label(left_frame, text = "or if your prefer", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 3, column = 0, padx = 5, pady = 5)
+    in_3 = Label(left_frame, text = "or if you prefer", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 3, column = 0, padx = 5, pady = 5)
 
     #Right_Frame_design
-
-
-
-    # Random ID determination? Redis SRANDMEMBER!
-    """_id = cache.srandmember(cache_key)
-    
-    # Random doc
-    doc = db[COLLECTION].find_one({'_id': ObjectId(_id)})
-    
-    # Need N random IDs? Redis SRANDMEMBER still!
-    _ids = [ObjectId(_id) for _id in cache.srandmember(cache_key, N)]
-    
-    # Random docs
-    docs = db[COLLECTION].find({'_id': {'$in': _ids}})"""
 
     window.mainloop()
