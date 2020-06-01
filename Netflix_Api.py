@@ -6,27 +6,44 @@ from pymongo import MongoClient
 import redis
 
 def store_cache(db, cache, cache_key, reset=True, limit=1000):
-    if reset:
+    #if reset:
+        #cache.delete(cache_key)
+    #query_data(db,cache,cache_key)
+    query_statistics(db,cache,cache_key)
+
+def query_data(db, cache, cache_key):
+    columns=["show_id","type","title","director","cast","country","date_added","release_year","rating","duration","listed_in","description"]
     #query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
     query={'show_id':'80163890'}
-    #projection={'_id':0,'show_id':1,'type':2,'title':3,'director':4,'cast':5,'country':6,'date_added':7,'release_year':8,'rating':9,'duration':10,'listed_in':11,'description':12}
     if not cache.sismember(cache_key, str(query)):
-        print("Buscando en la base de Mongo")
-        cursor=db.find(query).limit(1)
+        print("Searching in the mongo database...")
+        cursor=db.find(query).limit(1000)
         for doc in cursor:
             cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
-            print("Resultado de la busqueda: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
-            print(str(doc))
+            print("Search result: ")
+            print("         ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
             cache.sadd(cache_key, str(query))
             cache.expire(cache_key, MAX_EXPIRE_DURATION)
     else:
-        print("Buscando en el cache")
-        print("Resultado de la busqueda: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
-    print(cache.smembers("cache_set"))
+        print("Searching in the cache...")
+        print("Search result: ")
+        for col in columns:
+            print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
 
- 
-
-    
+def query_statistics(db, cache, cache_key):
+    query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
+    if not cache.sismember(cache_key, str(query)):
+        print("Searching in the mongo database...")
+        cursor=db.find(query).limit(1000).count()
+        cache.hmset("query:{}".format(str(query)),{"result":cursor})
+        print("Search result: ")
+        print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
+        cache.sadd(cache_key, str(query))
+        cache.expire(cache_key, MAX_EXPIRE_DURATION)
+    else:
+        print("Searching in the cache...")
+        print("Search result: ")
+        print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
 
 if __name__ == '__main__':
 
@@ -44,7 +61,7 @@ if __name__ == '__main__':
     #Definitions
 
     #Main
-    window = Tk()
+    """window = Tk()
     window.title("Netflix")
     window.maxsize(1010, 610)
     window.config(bg = "black")
@@ -67,4 +84,4 @@ if __name__ == '__main__':
 
     
 
-window.mainloop()
+window.mainloop()"""
