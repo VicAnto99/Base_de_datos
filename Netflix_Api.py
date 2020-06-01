@@ -6,24 +6,22 @@ from pymongo import MongoClient
 import redis
 
 def store_cache(db, cache, cache_key, reset=True, limit=1000):
-    #if reset:
-        #cache.delete(cache_key)
+    if reset:
     #query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
     query={'show_id':'80163890'}
     #projection={'_id':0,'show_id':1,'type':2,'title':3,'director':4,'cast':5,'country':6,'date_added':7,'release_year':8,'rating':9,'duration':10,'listed_in':11,'description':12}
-    print(cache.HEXISTS("query:{}".format(str(query))))
-    if(cache.hexists("query:{}".format(str(query)))):
-        print("Buscando en el cache")
-        print("Resultado guardado: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
-    else:
+    if not cache.sismember(cache_key, str(query)):
         print("Buscando en la base de Mongo")
         cursor=db.find(query).limit(1)
         for doc in cursor:
+            cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
+            print("Resultado de la busqueda: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
             print(str(doc))
-            if not cache.sismember(cache_key, str(query)):
-                cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
-                cache.sadd(cache_key, str(query))
-                cache.expire(cache_key, MAX_EXPIRE_DURATION)
+            cache.sadd(cache_key, str(query))
+            cache.expire(cache_key, MAX_EXPIRE_DURATION)
+    else:
+        print("Buscando en el cache")
+        print("Resultado de la busqueda: ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
     print(cache.smembers("cache_set"))
 
  
@@ -39,7 +37,9 @@ if __name__ == '__main__':
     cache = redis.from_url('redis://localhost:6379', db=0)
     cache_key = "cache_set"
     MAX_EXPIRE_DURATION = 24 * 3600
+    #Busqueda y almacenamiento de queries
     store_cache(col, cache, cache_key)
+    #
 
     #Definitions
 
@@ -64,17 +64,6 @@ if __name__ == '__main__':
 
     #Right_Frame_design
 
-    # Random ID determination? Redis SRANDMEMBER!
-    """_id = cache.srandmember(cache_key)
-    
-    # Random doc
-    doc = db[COLLECTION].find_one({'_id': ObjectId(_id)})
-    
-    # Need N random IDs? Redis SRANDMEMBER still!
-    _ids = [ObjectId(_id) for _id in cache.srandmember(cache_key, N)]
-    
-    # Random docs
-    docs = db[COLLECTION].find({'_id': {'$in': _ids}})"""
 
     
 
