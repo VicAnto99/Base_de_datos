@@ -68,6 +68,7 @@ if __name__ == '__main__':
     img = Label(left_frame, image = render, bg = "black").grid(row = 0, column = 0, padx = 0, pady = 0)
     in_1 = Label(left_frame, text = "INSTRUCTIONS", bg = "black", fg = "white", font = ("Verdana", 24)).grid(row = 1, column = 0, padx = 5, pady = 5)
     in_2 = Label(left_frame, text = "Select the type of your search", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    in_3 = Label(left_frame, text = "or if your prefer", bg = "black", fg = "white", font = ("Verdana", 12)).grid(row = 3, column = 0, padx = 5, pady = 5)
 
     #Right_Frame_design
 
