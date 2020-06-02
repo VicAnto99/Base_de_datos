@@ -23,6 +23,7 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
     right_display.set('NETFLIX')
     right_display2 = StringVar()
     value_search = StringVar()
+    value_search2 = StringVar()
     right_display2 = StringVar()
     right_display3 = StringVar()
 
@@ -44,7 +45,7 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
     search.add_command(label = "Country", command = partial(country_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
     search.add_command(label = "Realease year", command = partial(realease_year_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
     search.add_command(label = "Rating", command = partial(rating_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
-    search.add_command(label = "Search and have the statistics", command = partial(search_s_S,right_display,right_frame,db,cache,cache_key))
+    search.add_command(label = "Search and have the statistics", command = partial(search_s_S,right_display,right_frame,db,cache,cache_key,value_search,right_display3, value_search2,right_display2))
     menubar.add_cascade(label = "Search", menu = search)
 
     modify = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
@@ -91,9 +92,12 @@ def Query_data(db, cache, cache_key, key, value, right_frame, right_display3):
             print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
     right_display3.set(query)
     an_4 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 5, column = 0, padx = 5, pady = 5)
+    messagebox.showinfo(message = "Please check the terminal", title = "See the data")
 
-def Query_statistics(db, cache, cache_key):
-    query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
+def Query_statistics(db, cache, cache_key, value_search, right_display3, value_search2, right_display2, right_frame):
+    key = value_search.get()
+    value = value_search2.get()
+    query={key:value}
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
         cursor=db.find(query).limit(1000).count()
@@ -106,18 +110,22 @@ def Query_statistics(db, cache, cache_key):
         print("Searching in the cache...")
         print("Search result: ")
         print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
+    an_5 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 7, column = 0, padx = 5, pady = 5)
+    messagebox.showinfo(message = "Please check the terminal", title = "See the statistics")
 
 def Insert_in_database(db, cache, cache_key):
     query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."} 
     db.insert_one(query)
     print("Inserted in the database :")
     print(" ",query)
+    messagebox.showinfo(message = "Please check the terminal", title = "Insert in database")
 
 def Delete_of_database(db, cache, cache_key):
     query={'title':'SuperHotRELOADED'} 
     db.delete_one(query)
     print("Deleted from the database :")
     print(" ",query)
+    messagebox.showinfo(message = "Please check the terminal", title = "Delete in database")
 
 def Update_in_database(db, cache, cache_key):
     old_query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."}
@@ -125,6 +133,7 @@ def Update_in_database(db, cache, cache_key):
     db.update(old_query,new_query,True)
     print("Updated from the database :")
     print(" ",new_query)
+    messagebox.showinfo(message = "Please check the terminal", title = "Edit in database")
 
 def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
     key = "show_id"
@@ -206,10 +215,18 @@ def rating_s(right_display, right_frame, db,cache,cache_key, right_display2, val
     txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
     but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def search_s_S(right_display, right_frame, db,cache,cache_key):
+def search_s_S(right_display, right_frame, db,cache,cache_key, value_search, right_display3, value_search2, right_display2):
     right_display.set("Search by STATISTIC")
+    right_display2.set("Type the key please")
+    right_display3.set("Type the value please")
+    value_search.set('')
+    value_search2.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_statistics(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    an_4 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 4, column = 0, padx = 5, pady = 5)
+    txt_2 = Entry(right_frame, textvariable = value_search2, width = 46).grid(row = 5, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_statistics,db, cache, cache_key, value_search, right_display3, value_search2, right_display2,right_frame), text = "Search").grid(row= 6, column = 0, padx = 5, pady = 5)
 
 def edit_m(right_display, right_frame, db,cache,cache_key):
     right_display.set("EDIT something to the database")
