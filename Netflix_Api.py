@@ -21,6 +21,8 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
     #Variables
     right_display = StringVar()
     right_display.set('NETFLIX')
+    right_display2 = StringVar()
+    value_search = StringVar()
 
     #Left_Frame_design and Right_Frame_design and center
     center_frame_1 = Frame(window, width = 990, height = 590, bg='red')
@@ -32,7 +34,7 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
 
     #Menu
     search = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
-    search.add_command(label = "ID", command = partial(id_s,right_display,right_frame,db,cache,cache_key))
+    search.add_command(label = "ID", command = partial(id_s,right_display,right_frame,db,cache,cache_key,right_display2,value_search))
     search.add_command(label = "Type", command = partial(type_s,right_display,right_frame,db,cache,cache_key))
     search.add_command(label = "Title", command = partial(title_s,right_display,right_frame,db,cache,cache_key))
     search.add_command(label = "Director", command = partial(director_s,right_display,right_frame,db,cache,cache_key))
@@ -65,9 +67,9 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
 
     window.mainloop()
 
-def Query_data(db, cache, cache_key):
+def Query_data(db, cache, cache_key, key, value):
     columns=["show_id","type","title","director","cast","country","date_added","release_year","rating","duration","listed_in","description"]
-    query={'show_id':'80163890'}
+    query={key:'80163890'}
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
         cursor=db.find(query).limit(1000)
@@ -117,43 +119,53 @@ def Update_in_database(db, cache, cache_key):
     print("Updated from the database :")
     print(" ",new_query)
 
-def id_s(right_display, right_frame, db,cache,cache_key):
+def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search):
+    key = "show_id"
     right_display.set("Search by ID")
+    right_display2.set("Type the id please")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value_search)
 
 def type_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by TYPE")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def title_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by TITLE")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def director_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by DIRECTOR")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def cast_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by CAST")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def country_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by COUNTRY")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def realease_year_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by REALEASE YEAR")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def rating_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by RATING")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key, key, value)
 
 def search_s_S(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by STATISTIC")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_statistics(db,cache,cache_key)
+    Query_statistics(db,cache,cache_key, key, value)
 
 def edit_m(right_display, right_frame, db,cache,cache_key):
     right_display.set("EDIT something to the database")
