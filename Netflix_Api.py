@@ -120,6 +120,7 @@ def Update_in_database(db, cache, cache_key):
 def id_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by ID")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Query_data(db,cache,cache_key)
 
 def type_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by TYPE")
@@ -157,14 +158,17 @@ def search_s_S(right_display, right_frame, db,cache,cache_key):
 def edit_m(right_display, right_frame, db,cache,cache_key):
     right_display.set("EDIT something to the database")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Update_in_database(db,cache,cache_key)
 
 def add_m(right_display, right_frame, db,cache,cache_key):
     right_display.set("ADD something to the database")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Insert_in_database(db,cache,cache_key)
 
 def delete_m(right_display, right_frame, db,cache,cache_key):
     right_display.set("DELETE something to the database")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
+    Delete_of_database(db,cache,cache_key)
 
 if __name__ == '__main__':
     #Connections
