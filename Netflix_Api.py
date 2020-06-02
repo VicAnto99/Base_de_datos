@@ -23,6 +23,8 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
     right_display.set('NETFLIX')
     right_display2 = StringVar()
     value_search = StringVar()
+    right_display2 = StringVar()
+    right_display3 = StringVar()
 
     #Left_Frame_design and Right_Frame_design and center
     center_frame_1 = Frame(window, width = 990, height = 590, bg='red')
@@ -34,14 +36,14 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
 
     #Menu
     search = Menu(menubar, tearoff = 0, bg = 'gray17', fg = 'gray63')
-    search.add_command(label = "ID", command = partial(id_s,right_display,right_frame,db,cache,cache_key,right_display2,value_search))
-    search.add_command(label = "Type", command = partial(type_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Title", command = partial(title_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Director", command = partial(director_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Cast", command = partial(cast_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Country", command = partial(country_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Realease year", command = partial(realease_year_s,right_display,right_frame,db,cache,cache_key))
-    search.add_command(label = "Rating", command = partial(rating_s,right_display,right_frame,db,cache,cache_key))
+    search.add_command(label = "ID", command = partial(id_s,right_display,right_frame,db,cache,cache_key,right_display2,value_search,right_display3))
+    search.add_command(label = "Type", command = partial(type_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Title", command = partial(title_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Director", command = partial(director_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Cast", command = partial(cast_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Country", command = partial(country_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Realease year", command = partial(realease_year_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
+    search.add_command(label = "Rating", command = partial(rating_s,right_display,right_frame,db,cache,cache_key, right_display2, value_search,right_display3))
     search.add_command(label = "Search and have the statistics", command = partial(search_s_S,right_display,right_frame,db,cache,cache_key))
     menubar.add_cascade(label = "Search", menu = search)
 
@@ -67,12 +69,14 @@ def Store_cache(db, cache, cache_key, reset=True, limit=1000):
 
     window.mainloop()
 
-def Query_data(db, cache, cache_key, key, value):
+def Query_data(db, cache, cache_key, key, value, right_frame, right_display3):
+    print(key, value.get())
+    value2 = str(value.get())
     columns=["show_id","type","title","director","cast","country","date_added","release_year","rating","duration","listed_in","description"]
-    query={key:'80163890'}
+    query={key:value2}
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
-        cursor=db.find(query).limit(1000)
+        cursor=db.find(query).limit(1)
         for doc in cursor:
             cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
             print("Search result: ")
@@ -85,6 +89,8 @@ def Query_data(db, cache, cache_key, key, value):
         print("Search result: ")
         for col in columns:
             print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
+    right_display3.set(query)
+    an_4 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 5, column = 0, padx = 5, pady = 5)
 
 def Query_statistics(db, cache, cache_key):
     query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
@@ -102,7 +108,7 @@ def Query_statistics(db, cache, cache_key):
         print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
 
 def Insert_in_database(db, cache, cache_key):
-    query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",} 
+    query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."} 
     db.insert_one(query)
     print("Inserted in the database :")
     print(" ",query)
@@ -114,54 +120,91 @@ def Delete_of_database(db, cache, cache_key):
     print(" ",query)
 
 def Update_in_database(db, cache, cache_key):
-    old_query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",}
-    new_query={'show_id':'01010101','title':'SuperHot RELOADED','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye hace tiempo que no hablamos and then everything changed...again...for the last time...",}
+    old_query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."}
+    new_query={'show_id':'01010101','type':'+18','title':'SuperHot RELOADED','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye oye hace tiempo que no hablamos and then everything changed...again..."}
     db.update(old_query,new_query,True)
     print("Updated from the database :")
     print(" ",new_query)
 
-def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search):
+def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
     key = "show_id"
     right_display.set("Search by ID")
     right_display2.set("Type the id please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
     an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value_search)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def type_s(right_display, right_frame, db,cache,cache_key):
+def type_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "type"
     right_display.set("Search by TYPE")
+    right_display2.set("Type the type please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def title_s(right_display, right_frame, db,cache,cache_key):
+def title_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "title"
     right_display.set("Search by TITLE")
+    right_display2.set("Type the title please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def director_s(right_display, right_frame, db,cache,cache_key):
+def director_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "director"
     right_display.set("Search by DIRECTOR")
+    right_display2.set("Type the director please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def cast_s(right_display, right_frame, db,cache,cache_key):
+def cast_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "cast"
     right_display.set("Search by CAST")
+    right_display2.set("Type the cast please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def country_s(right_display, right_frame, db,cache,cache_key):
+def country_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "country"
     right_display.set("Search by COUNTRY")
+    right_display2.set("Type the country please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def realease_year_s(right_display, right_frame, db,cache,cache_key):
+def realease_year_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "release_year"
     right_display.set("Search by REALEASE YEAR")
+    right_display2.set("Type the realease year please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
-def rating_s(right_display, right_frame, db,cache,cache_key):
+def rating_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
+    key = "rating"
     right_display.set("Search by RATING")
+    right_display2.set("Type the rating please")
+    value_search.set('')
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
-    Query_data(db,cache,cache_key, key, value)
+    an_3 = Label(right_frame, textvariable = right_display2, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 2, column = 0, padx = 5, pady = 5)
+    txt_1 = Entry(right_frame, textvariable = value_search, width = 46).grid(row = 3, column = 0, padx = 5, pady = 5)
+    but_1 = Button(right_frame, command = partial(Query_data,db,cache,cache_key,key,value_search,right_frame,right_display3), text = "Search").grid(row= 4, column = 0, padx = 5, pady = 5)
 
 def search_s_S(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by STATISTIC")
@@ -185,6 +228,8 @@ def delete_m(right_display, right_frame, db,cache,cache_key):
 
 if __name__ == '__main__':
     #Connections
+    """c = redis.Redis()
+    c.config_set('maxmemory','100000')"""
     client = MongoClient()
     db = client.Netflix
     col = db.Titles
