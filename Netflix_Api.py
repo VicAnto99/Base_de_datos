@@ -98,6 +98,25 @@ def Query_statistics(db, cache, cache_key):
         print("Search result: ")
         print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
 
+def Insert_in_database(db, cache, cache_key):
+    query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",} 
+    db.insert_one(query)
+    print("Inserted in the database :")
+    print(" ",query)
+
+def Delete_of_database(db, cache, cache_key):
+    query={'title':'SuperHotRELOADED'} 
+    db.delete_one(query)
+    print("Deleted from the database :")
+    print(" ",query)
+
+def Update_in_database(db, cache, cache_key):
+    old_query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",}
+    new_query={'show_id':'01010101','title':'SuperHot RELOADED','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye hace tiempo que no hablamos and then everything changed...again...for the last time...",}
+    db.update(old_query,new_query,True)
+    print("Updated from the database :")
+    print(" ",new_query)
+
 def id_s(right_display, right_frame, db,cache,cache_key):
     right_display.set("Search by ID")
     an_2 = Label(right_frame, textvariable = right_display, bg = "gray10", fg = "gray55", font = ("Verdana", 18)).grid(row = 1, column = 0, padx = 5, pady = 5)
