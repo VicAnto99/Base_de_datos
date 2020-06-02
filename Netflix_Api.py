@@ -118,14 +118,14 @@ def Insert_in_database(db, cache, cache_key):
     db.insert_one(query)
     print("Inserted in the database :")
     print(" ",query)
-    messagebox.showinfo(message = "Please check the terminal", title = "Insert in database")
+    messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Insert in database")
 
 def Delete_of_database(db, cache, cache_key):
     query={'title':'SuperHotRELOADED'} 
     db.delete_one(query)
     print("Deleted from the database :")
     print(" ",query)
-    messagebox.showinfo(message = "Please check the terminal", title = "Delete in database")
+    messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Delete in database")
 
 def Update_in_database(db, cache, cache_key):
     old_query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."}
@@ -133,7 +133,7 @@ def Update_in_database(db, cache, cache_key):
     db.update(old_query,new_query,True)
     print("Updated from the database :")
     print(" ",new_query)
-    messagebox.showinfo(message = "Please check the terminal", title = "Edit in database")
+    messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Edit in database")
 
 def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
     key = "show_id"
