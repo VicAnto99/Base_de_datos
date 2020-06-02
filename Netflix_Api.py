@@ -5,15 +5,17 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 import redis
 
-def store_cache(db, cache, cache_key, reset=True, limit=1000):
+def Store_cache(db, cache, cache_key, reset=True, limit=1000):
     #if reset:
         #cache.delete(cache_key)
-    #query_data(db,cache,cache_key)
-    query_statistics(db,cache,cache_key)
+    #Query_data(db,cache,cache_key)
+    #Query_statistics(db,cache,cache_key)
+    #Insert_in_database(db,cache,cache_key)
+    #Delete_of_database(db,cache,cache_key)
+    Update_in_database(db,cache,cache_key)
 
-def query_data(db, cache, cache_key):
+def Query_data(db, cache, cache_key):
     columns=["show_id","type","title","director","cast","country","date_added","release_year","rating","duration","listed_in","description"]
-    #query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
     query={'show_id':'80163890'}
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
@@ -30,7 +32,7 @@ def query_data(db, cache, cache_key):
         for col in columns:
             print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
 
-def query_statistics(db, cache, cache_key):
+def Query_statistics(db, cache, cache_key):
     query={'release_year':'2019','duration':'90 min','rating':'TV-PG'}
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
@@ -45,6 +47,25 @@ def query_statistics(db, cache, cache_key):
         print("Search result: ")
         print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
 
+def Insert_in_database(db, cache, cache_key):
+    query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",} 
+    db.insert_one(query)
+    print("Inserted in the database :")
+    print(" ",query)
+
+def Delete_of_database(db, cache, cache_key):
+    query={'title':'SuperHotRELOADED'} 
+    db.delete_one(query)
+    print("Deleted from the database :")
+    print(" ",query)
+
+def Update_in_database(db, cache, cache_key):
+    old_query={'show_id':'01010101','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye estas muy guapo and then everything changed...",}
+    new_query={'show_id':'01010101','title':'SuperHot RELOADED','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"A girl comes by and said oye hace tiempo que no hablamos and then everything changed...again...for the last time...",}
+    db.update(old_query,new_query,True)
+    print("Updated from the database :")
+    print(" ",new_query)
+
 if __name__ == '__main__':
 
     #Connections
@@ -55,7 +76,7 @@ if __name__ == '__main__':
     cache_key = "cache_set"
     MAX_EXPIRE_DURATION = 24 * 3600
     #Busqueda y almacenamiento de queries
-    store_cache(col, cache, cache_key)
+    Store_cache(col, cache, cache_key)
     #
 
     #Definitions
