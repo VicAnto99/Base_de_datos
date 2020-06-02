@@ -76,7 +76,8 @@ def Query_data(db, cache, cache_key, key, value):
         for doc in cursor:
             cache.hmset("query:{}".format(str(query)),{"show_id":doc['show_id'],"type":doc['type'],"title":doc['title'],"director":doc['director'],"cast":doc['cast'],"country":doc['country'],"date_added":doc['date_added'],"release_year":doc['release_year'],"rating":doc['rating'],"duration":doc['duration'],"listed_in":doc['listed_in'],"description":doc['description']})
             print("Search result: ")
-            print("         ",cache.hget("query:{}".format(str(query)), "title").decode("UTF-8"))
+            for col in columns:
+                print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
             cache.sadd(cache_key, str(query))
             cache.expire(cache_key, MAX_EXPIRE_DURATION)
     else:
