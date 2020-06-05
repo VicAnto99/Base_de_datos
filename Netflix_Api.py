@@ -119,12 +119,16 @@ def Query_statistics(db, cache, cache_key, value_search, right_display3, value_s
 
 def Insert_in_database(db, cache, cache_key):
     print("\n")
-    query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."} 
+    query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'United States','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."} 
     db.insert_one(query)
     print("Inserted in the database :")
     print(" ",query)
     print("----------------------------------------------------------------------------")
     messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Insert in database")
+    while(cache.scard(cache_key)!=0):
+        x=cache.srandmember(cache_key)
+        cache.srem(cache_key,x)
+
 
 def Delete_of_database(db, cache, cache_key):
     print("\n")
@@ -134,6 +138,9 @@ def Delete_of_database(db, cache, cache_key):
     print(" ",query)
     print("----------------------------------------------------------------------------")
     messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Delete in database")
+    while(cache.scard(cache_key)!=0):
+        x=cache.srandmember(cache_key)
+        cache.srem(cache_key,x)
 
 def Update_in_database(db, cache, cache_key):
     print("\n")
