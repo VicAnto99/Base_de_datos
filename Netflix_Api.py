@@ -75,6 +75,7 @@ def Query_data(db, cache, cache_key, key, value, right_frame, right_display3):
     value2 = str(value.get())
     columns=["show_id","type","title","director","cast","country","date_added","release_year","rating","duration","listed_in","description"]
     query={key:value2}
+    print("\n")
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
         cursor=db.find(query).limit(1)
@@ -89,7 +90,8 @@ def Query_data(db, cache, cache_key, key, value, right_frame, right_display3):
         print("Searching in the cache...")
         print("Search result: ")
         for col in columns:
-            print(col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
+            print("     ",col,": ",cache.hget("query:{}".format(str(query)), col).decode("UTF-8"))
+    print("----------------------------------------------------------------------------")
     right_display3.set(query)
     an_4 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 5, column = 0, padx = 5, pady = 5)
     messagebox.showinfo(message = "Please check the terminal", title = "See the data")
@@ -98,6 +100,7 @@ def Query_statistics(db, cache, cache_key, value_search, right_display3, value_s
     key = value_search.get()
     value = value_search2.get()
     query={key:value}
+    print("\n")
     if not cache.sismember(cache_key, str(query)):
         print("Searching in the mongo database...")
         cursor=db.find(query).limit(1000).count()
@@ -110,30 +113,42 @@ def Query_statistics(db, cache, cache_key, value_search, right_display3, value_s
         print("Searching in the cache...")
         print("Search result: ")
         print("         ",cache.hget("query:{}".format(str(query)), "result").decode("UTF-8"))
+    print("----------------------------------------------------------------------------")
     an_5 = Label(right_frame, textvariable = right_display3, bg = "gray10", fg = "gray55", font = ("Verdana", 14)).grid(row = 7, column = 0, padx = 5, pady = 5)
     messagebox.showinfo(message = "Please check the terminal", title = "See the statistics")
 
 def Insert_in_database(db, cache, cache_key):
+    print("\n")
     query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."} 
     db.insert_one(query)
     print("Inserted in the database :")
     print(" ",query)
+    print("----------------------------------------------------------------------------")
     messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Insert in database")
 
 def Delete_of_database(db, cache, cache_key):
+    print("\n")
     query={'title':'SuperHotRELOADED'} 
     db.delete_one(query)
     print("Deleted from the database :")
     print(" ",query)
+    print("----------------------------------------------------------------------------")
     messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Delete in database")
 
 def Update_in_database(db, cache, cache_key):
+    print("\n")
     old_query={'show_id':'01010101','type':'+18','title':'SuperHot','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye estas muy guapo and then everything changed..."}
     new_query={'show_id':'01010101','type':'+18','title':'SuperHot RELOADED','director':"Diego Ramirez",'cast': "Victor, Omar",'country':'Mexico','date_added':"June 1, 2020",'release_year':'2020','rating':'TV-PG','duration':'75 min','listed_in':"Adult Films","description":"A girl comes by and said oye oye hace tiempo que no hablamos and then everything changed...again..."}
     db.update(old_query,new_query,True)
     print("Updated from the database :")
     print(" ",new_query)
+    print("----------------------------------------------------------------------------")
     messagebox.showinfo(message = "Please check the terminal \nText field is only for searching queries", title = "Edit in database")
+    while(cache.scard(cache_key)!=0):
+        x=cache.srandmember(cache_key)
+        cache.srem(cache_key,x)
+
+    
 
 def id_s(right_display, right_frame, db,cache,cache_key, right_display2, value_search, right_display3):
     key = "show_id"
