@@ -260,8 +260,6 @@ def delete_m(right_display, right_frame, db,cache,cache_key):
 
 if __name__ == '__main__':
     #Connections
-    """c = redis.Redis()
-    c.config_set('maxmemory','100000')"""
     client = MongoClient()
     db = client.Netflix
     col = db.Titles
